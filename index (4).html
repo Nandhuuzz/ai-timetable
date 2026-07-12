@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#12142B">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
+ 
 :root{
   --ink:#12142B;
   --ink-2:#1B1F3D;
@@ -26,7 +26,7 @@
   --radius:16px;
   --shadow: 0 8px 30px rgba(18,20,43,0.08);
 }
-
+ 
 *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
 html,body{margin:0; padding:0;}
 body{
@@ -38,9 +38,9 @@ body{
 }
 h1,h2,h3,.display{ font-family:'Fraunces', serif; }
 .mono{ font-family:'JetBrains Mono', monospace; }
-
+ 
 #app{ display:flex; flex-direction:column; min-height:100vh; width:100%; }
-
+ 
 /* ---------- LOGIN SCREEN ---------- */
 .login-wrap{
   min-height:100vh; width:100%;
@@ -70,7 +70,7 @@ h1,h2,h3,.display{ font-family:'Fraunces', serif; }
 .role-btn .t2{ font-size:12px; color:var(--ink-soft); }
 .back-link{ font-size:13px; color:var(--ink-soft); cursor:pointer; margin-bottom:14px; display:inline-block; }
 .err-msg{ color:var(--terracotta); font-size:12.5px; font-weight:600; margin:-6px 0 12px; }
-
+ 
 /* ---------- APP SHELL ---------- */
 .topbar{
   display:flex; align-items:center; gap:12px; padding: 14px 18px;
@@ -84,11 +84,11 @@ h1,h2,h3,.display{ font-family:'Fraunces', serif; }
 .topbar .spacer{ flex:1; }
 .topbar .badge{ font-size:10.5px; font-weight:600; color:var(--ink); background: var(--marigold); padding:4px 9px; border-radius:999px; white-space:nowrap; }
 .topbar .logout{ background:rgba(255,255,255,0.12); border:none; color:#fff; font-size:11.5px; font-weight:700; padding:7px 11px; border-radius:9px; cursor:pointer; white-space:nowrap; }
-
+ 
 .shell{ flex:1; display:flex; width:100%; min-height:0; }
 .rail{ display:none; }
 main{ flex:1; min-width:0; width:100%; padding: 18px 16px 96px 16px; max-width: 980px; margin:0 auto; }
-
+ 
 .bottomnav{
   position:fixed; left:0; right:0; bottom:0; z-index:50; display:flex;
   background: var(--surface); border-top:1px solid var(--line);
@@ -103,7 +103,7 @@ main{ flex:1; min-width:0; width:100%; padding: 18px 16px 96px 16px; max-width: 
 }
 .bottomnav button svg{ width:20px; height:20px; }
 .bottomnav button.active{ color: var(--teal-dk); background: rgba(47,191,163,0.1); }
-
+ 
 @media (min-width: 860px){
   .shell{ padding: 0 24px; max-width:1200px; margin:0 auto; gap:24px; }
   .rail{
@@ -121,11 +121,11 @@ main{ flex:1; min-width:0; width:100%; padding: 18px 16px 96px 16px; max-width: 
   .bottomnav{ display:none; }
   main{ padding: 24px 0 60px 0; }
 }
-
+ 
 .card{ background: var(--surface); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom:16px; border:1px solid var(--line); }
 .section-title{ font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 4px 0; }
 .section-sub{ color:var(--ink-soft); font-size:13.5px; margin:0 0 14px 0; }
-
+ 
 .pill{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:700; }
 .pill.core{ background:rgba(242,169,59,0.16); color:var(--marigold-dk); }
 .pill.elective{ background:rgba(47,191,163,0.14); color:var(--teal-dk); }
@@ -134,7 +134,7 @@ main{ flex:1; min-width:0; width:100%; padding: 18px 16px 96px 16px; max-width: 
 .pill.pending{ background:rgba(242,169,59,0.16); color:var(--marigold-dk); }
 .pill.approved{ background:rgba(47,191,163,0.14); color:var(--teal-dk); }
 .pill.rejected, .pill.conflict{ background:rgba(226,101,75,0.14); color:var(--terracotta); }
-
+ 
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   font-family:'Inter',sans-serif; font-weight:700; font-size:14px;
@@ -149,7 +149,7 @@ main{ flex:1; min-width:0; width:100%; padding: 18px 16px 96px 16px; max-width: 
 .btn.small{ padding:8px 12px; font-size:12.5px; }
 .btn:disabled{ opacity:0.5; cursor:not-allowed; }
 .btn-full{ width:100%; }
-
+ 
 label{ font-size:12.5px; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:5px; }
 input[type=text], input[type=number], input[type=password], select{
   width:100%; padding:10px 11px; border-radius:9px; border:1.5px solid var(--line);
@@ -159,37 +159,37 @@ input:focus, select:focus{ outline:2px solid var(--teal); outline-offset:1px; bo
 .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
 .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 10px; }
 @media (max-width:480px){ .grid3{ grid-template-columns:1fr 1fr; } }
-
+ 
 .chips{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
 .chip{ padding:7px 12px; border-radius:999px; border:1.5px solid var(--line); font-size:12.5px; font-weight:600; cursor:pointer; background:#fff; color:var(--ink-soft); }
 .chip.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
-
+ 
 table.list{ width:100%; border-collapse:collapse; font-size:13px; }
 table.list th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); padding:6px 8px; border-bottom:1.5px solid var(--line); }
 table.list td{ padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
 table.list tr:last-child td{ border-bottom:none; }
 .empty{ text-align:center; color:var(--ink-soft); font-size:13px; padding:22px 10px; }
-
+ 
 .stat-row{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
 .stat{ flex:1; min-width:110px; background:var(--cream); border-radius:12px; padding:12px 14px; border:1px solid var(--line); }
 .stat .num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
 .stat .lbl{ font-size:11.5px; color:var(--ink-soft); margin-top:4px; font-weight:600; }
-
+ 
 .chakra{ animation: spin 3.2s linear infinite; }
 @keyframes spin{ to{ transform: rotate(360deg); } }
-
+ 
 .gen-stage{ display:flex; flex-direction:column; align-items:center; text-align:center; padding:26px 10px; }
 .gen-stage .chakra-wrap{ width:96px; height:96px; margin-bottom:16px; }
 .gen-stage .msg{ font-family:'Fraunces',serif; font-size:17px; font-weight:600; }
 .gen-stage .sub{ color:var(--ink-soft); font-size:13px; margin-top:5px; }
-
+ 
 .banner{ border-radius:12px; padding:14px 16px; margin-bottom:16px; display:flex; gap:12px; align-items:flex-start; }
 .banner.ok{ background:rgba(47,191,163,0.12); border:1px solid rgba(47,191,163,0.3); }
 .banner.warn{ background:rgba(226,101,75,0.1); border:1px solid rgba(226,101,75,0.3); }
 .banner .icon{ flex-shrink:0; margin-top:1px; }
 .banner .t{ font-weight:700; font-size:14px; }
 .banner .d{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
-
+ 
 .tt-wrap{ overflow-x:auto; border-radius:12px; border:1px solid var(--line); }
 table.tt{ border-collapse:collapse; width:100%; min-width:640px; }
 table.tt th{ background:var(--ink); color:#fff; font-size:11px; padding:9px 6px; text-align:center; position:sticky; top:0; }
@@ -204,26 +204,26 @@ table.tt td.time-col, table.tt th.time-col{ background:var(--cream); color:var(-
 .cell-course.lab{ background:rgba(226,101,75,0.16); }
 .cell-course.cancelled{ background:repeating-linear-gradient(45deg, rgba(226,101,75,0.18), rgba(226,101,75,0.18) 6px, rgba(226,101,75,0.08) 6px, rgba(226,101,75,0.08) 12px); }
 .cell-empty{ color:var(--line); text-align:center; font-size:11px; }
-
+ 
 .bar-track{ height:9px; border-radius:999px; background:var(--line); overflow:hidden; margin-top:6px; }
 .bar-fill{ height:100%; border-radius:999px; background: linear-gradient(90deg, var(--teal-dk), var(--teal)); }
 .util-row{ margin-bottom:14px; }
 .util-row .top{ display:flex; justify-content:space-between; font-size:13px; font-weight:600; }
-
+ 
 .notif{ display:flex; gap:10px; padding:12px 0; border-bottom:1px solid var(--line); }
 .notif:last-child{ border-bottom:none; }
 .notif .dot{ width:8px; height:8px; border-radius:50%; background:var(--terracotta); margin-top:6px; flex-shrink:0; }
 .notif .txt{ font-size:13.5px; }
 .notif .ts{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
-
+ 
 .agenda-day{ margin-bottom:16px; }
 .agenda-day h3{ font-family:'Fraunces',serif; font-size:15px; margin:0 0 8px 0; }
 .agenda-item{ display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:var(--cream); margin-bottom:7px; border:1px solid var(--line); }
 .agenda-item .l{ font-size:13px; font-weight:600; }
 .agenda-item .r{ font-size:11.5px; color:var(--ink-soft); text-align:right; }
-
+ 
 footer.credit{ text-align:center; font-size:11.5px; color:var(--ink-soft); padding:20px 10px 10px; }
-
+ 
 @media print{
   .topbar, .bottomnav, .rail, .no-print{ display:none !important; }
   body{ background:#fff; }
@@ -233,7 +233,7 @@ footer.credit{ text-align:center; font-size:11.5px; color:var(--ink-soft); paddi
 </head>
 <body>
 <div id="app"></div>
-
+ 
 <script>
 /* ================= ICONS ================= */
 function chakraSVG(spin){
@@ -260,12 +260,12 @@ const ICONS = {
   inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`,
 };
 const ADMIN_PASSWORD = '2026';
-
+ 
 /* ================= STATE ================= */
 const STORE_KEY = 'kalachakra_v2';
 let state = null;
 function uid(){ return Math.random().toString(36).slice(2,9); }
-
+ 
 function seedDefault(){
   const secA = { id: uid(), name: 'II EEE - A' };
   const fac = [
@@ -303,7 +303,7 @@ function seedDefault(){
     session: { role:null, sectionId:null, facultyId:null, adminOk:false, tab:null },
   };
 }
-
+ 
 function load(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -316,7 +316,7 @@ function load(){
   state.session = state.session || { role:null, sectionId:null, facultyId:null, adminOk:false, tab:null };
 }
 function persist(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
-
+ 
 /* ================= LOOKUPS ================= */
 function getFaculty(id){ return state.faculty.find(f=>f.id===id); }
 function getRoom(id){ return state.rooms.find(r=>r.id===id); }
@@ -324,7 +324,7 @@ function getSection(id){ return state.sections.find(s=>s.id===id); }
 function facName(id){ const f=getFaculty(id); return f?f.name:'Unassigned'; }
 function roomName(id){ const r=getRoom(id); return r?r.name:'TBD'; }
 function secName(id){ const s=getSection(id); return s?s.name:'—'; }
-
+ 
 /* ================= TIME LABELS ================= */
 function periodLabel(idx, startHour){
   let mins = 0;
@@ -339,12 +339,12 @@ function periodLabel(idx, startHour){
   return `${fmt(startTotal)}–${fmt(endTotal)} ${startTotal>=720?'PM':'AM'}`;
 }
 function timeSlotStr(day, p){ return `${day}, period ${p+1} (${periodLabel(p, state.institution.startHour)})`; }
-
+ 
 /* ================= GENERATION ALGORITHM ================= */
 function generateTimetable(){
   const days = state.institution.days;
   const P = state.institution.periodsPerDay;
-
+ 
   let sessions = [];
   state.subjects.forEach(sub=>{
     const isLab = sub.type === 'lab';
@@ -355,7 +355,7 @@ function generateTimetable(){
       for(let s=0;s<sub.periodsPerWeek;s++) sessions.push({subId:sub.id, sub, length:1});
     }
   });
-
+ 
   function eligibleFaculty(sub){
     const named = state.faculty.filter(f => f.specializations.some(sp => sp.toLowerCase()===sub.name.toLowerCase()));
     return named.length ? named : state.faculty;
@@ -363,18 +363,18 @@ function generateTimetable(){
   function eligibleRooms(sub){
     return state.rooms.filter(r => r.type === (sub.roomType||'theory'));
   }
-
+ 
   let best = null;
   const ATTEMPTS = 80;
   const t0 = performance.now();
-
+ 
   for(let attempt=0; attempt<ATTEMPTS; attempt++){
     const secBusy = {}, facBusy = {}, roomBusy = {}, facLoad = {}, secSubjDay = {};
     const placed = [];
     let unplaced = 0;
-
+ 
     const order = [...sessions].sort(()=>Math.random()-0.5).sort((a,b)=> b.length - a.length);
-
+ 
     for(const sess of order){
       const sub = sess.sub;
       const secId = sub.sectionId;
@@ -382,7 +382,7 @@ function generateTimetable(){
       const rms = eligibleRooms(sub).sort(()=> Math.random()-0.5);
       let done = false;
       if(!facs.length || !rms.length){ unplaced++; continue; }
-
+ 
       for(let pass=0; pass<2 && !done; pass++){
         const dayOrder = [...days.map((d,i)=>i)].sort(()=>Math.random()-0.5);
         for(const di of dayOrder){
@@ -395,7 +395,7 @@ function generateTimetable(){
             const slots = sess.length===2 ? [p,p+1] : [p];
             const secFree = slots.every(s => !secBusy[`${secId}-${day}-${s}`]);
             if(!secFree) continue;
-
+ 
             let chosenFac=null, chosenRoom=null;
             for(const f of facs){
               const load = facLoad[f.id]||0;
@@ -409,7 +409,7 @@ function generateTimetable(){
               if(free){ chosenRoom=r; break; }
             }
             if(!chosenRoom) continue;
-
+ 
             slots.forEach(s=>{
               secBusy[`${secId}-${day}-${s}`]=true;
               facBusy[`${chosenFac.id}-${day}-${s}`]=true;
@@ -425,14 +425,14 @@ function generateTimetable(){
       }
       if(!done) unplaced++;
     }
-
+ 
     if(!best || unplaced < best.unplaced) best = { placed, unplaced };
     if(unplaced===0) break;
   }
-
+ 
   const t1 = performance.now();
   const sessionsOut = best.placed.map(pl=>({ id:uid(), secId:pl.secId, day:pl.day, periods:pl.periods, sub:pl.sub, facultyId:pl.facultyId, roomId:pl.roomId, cancelled:false }));
-
+ 
   state.timetable = { sessions: sessionsOut, unplaced: best.unplaced, timeMs: (t1-t0), generatedAt: new Date().toISOString() };
   state.notifications = [];
   state.absences = [];
@@ -440,7 +440,7 @@ function generateTimetable(){
   persist();
   return state.timetable;
 }
-
+ 
 /* ---- derived views ---- */
 function sessionsForSection(secId){ return state.timetable ? state.timetable.sessions.filter(s=>s.secId===secId) : []; }
 function sessionsForFaculty(facId){ return state.timetable ? state.timetable.sessions.filter(s=>s.facultyId===facId) : []; }
@@ -461,10 +461,10 @@ function roomBusyMap(){
   (state.timetable?.sessions||[]).forEach(s=>{ if(!s.cancelled) s.periods.forEach(p=> m[`${s.roomId}-${s.day}-${p}`]=true); });
   return m;
 }
-
+ 
 /* ================= ACTIONS: notifications / absence / swap ================= */
 function addNotification(secId, text){ state.notifications.unshift({ id:uid(), secId, text, ts:Date.now() }); persist(); }
-
+ 
 function markFacultyAbsent(facultyId, day){
   const sess = sessionsForFaculty(facultyId).filter(s=>s.day===day && !s.cancelled);
   sess.forEach(sess1=>{
@@ -487,12 +487,12 @@ function markFacultyAbsent(facultyId, day){
   state.absences.unshift({ id:uid(), facultyId, day, ts:Date.now() });
   persist();
 }
-
+ 
 function requestSwap(facultyId, sessionId, requestedDay, requestedPeriod){
   state.swapRequests.unshift({ id:uid(), facultyId, sessionId, requestedDay, requestedPeriod, status:'pending', ts:Date.now() });
   persist();
 }
-
+ 
 function approveSwap(reqId){
   const req = state.swapRequests.find(r=>r.id===reqId);
   if(!req) return;
@@ -512,11 +512,11 @@ function approveSwap(reqId){
   persist();
 }
 function rejectSwap(reqId){ const req = state.swapRequests.find(r=>r.id===reqId); if(req){ req.status='rejected'; persist(); } }
-
+ 
 /* ================= LOGIN SCREEN ================= */
 let loginStep = null;
 let adminError = false;
-
+ 
 function renderLogin(){
   let inner = '';
   if(!loginStep){
@@ -567,7 +567,7 @@ function renderLogin(){
   document.getElementById('app').innerHTML = `<div class="login-wrap"><div class="login-card">${inner}</div></div>`;
   bindLoginEvents();
 }
-
+ 
 function bindLoginEvents(){
   document.querySelectorAll('[data-role]').forEach(b=>{ b.onclick = ()=>{ loginStep = b.dataset.role; adminError=false; renderLogin(); }; });
   const back = document.querySelector('[data-back]');
@@ -593,19 +593,19 @@ function bindLoginEvents(){
     };
   }
 }
-
+ 
 function logout(){ state.session = { role:null, sectionId:null, facultyId:null, adminOk:false, tab:null }; persist(); loginStep=null; render(); }
-
+ 
 /* ================= SHARED: TYPE PILL ================= */
 function typePill(type){ return `<span class="pill ${type}">${type}</span>`; }
-
+ 
 /* ================= STUDENT VIEW ================= */
 const STUDENT_TABS = [
   { id:'my-timetable', label:'Timetable', icon:ICONS.timetable },
   { id:'notifications', label:'Notices', icon:ICONS.bell },
 ];
 let studentDayFilter = 'all';
-
+ 
 function renderStudentTimetable(){
   const secId = state.session.sectionId;
   const sec = getSection(secId);
@@ -613,7 +613,7 @@ function renderStudentTimetable(){
   const P = state.institution.periodsPerDay;
   const cells = cellsForSection(secId);
   const filterDays = studentDayFilter==='all' ? days : [studentDayFilter];
-
+ 
   return `
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -660,7 +660,7 @@ function renderStudentTimetable(){
   </div>
   `;
 }
-
+ 
 function renderStudentNotifications(){
   const secId = state.session.sectionId;
   const list = state.notifications.filter(n=>n.secId===secId);
@@ -673,12 +673,12 @@ function renderStudentNotifications(){
     `).join('') : `<p class="empty">No notices yet.</p>`}
   </div>`;
 }
-
+ 
 function renderStudentContent(){
   if(state.session.tab==='notifications') return renderStudentNotifications();
   return renderStudentTimetable();
 }
-
+ 
 /* ================= FACULTY VIEW ================= */
 const FACULTY_TABS = [
   { id:'my-schedule', label:'Schedule', icon:ICONS.timetable },
@@ -686,7 +686,7 @@ const FACULTY_TABS = [
   { id:'request-swap', label:'Swap', icon:ICONS.swap },
   { id:'workload', label:'Workload', icon:ICONS.clock },
 ];
-
+ 
 function renderFacultySchedule(){
   const facId = state.session.facultyId;
   const days = state.institution.days;
@@ -708,7 +708,7 @@ function renderFacultySchedule(){
     }).join('') || `<div class="card"><p class="empty">You have no classes assigned this week.</p></div>`
   }`;
 }
-
+ 
 function renderFacultyAbsence(){
   const facId = state.session.facultyId;
   const days = [...new Set(sessionsForFaculty(facId).map(s=>s.day))];
@@ -730,7 +730,7 @@ function renderFacultyAbsence(){
     </tbody></table>` : `<p class="empty">No absences marked yet.</p>`}
   </div>`;
 }
-
+ 
 function renderFacultySwap(){
   const facId = state.session.facultyId;
   const days = state.institution.days;
@@ -758,7 +758,7 @@ function renderFacultySwap(){
     </tbody></table>` : `<p class="empty">No requests submitted yet.</p>`}
   </div>`;
 }
-
+ 
 function renderFacultyWorkload(){
   const facId = state.session.facultyId;
   const f = getFaculty(facId);
@@ -776,7 +776,7 @@ function renderFacultyWorkload(){
     <p class="section-sub" style="margin-top:12px;">Specializations: ${f.specializations.join(', ')||'—'}</p>
   </div>`;
 }
-
+ 
 function renderFacultyContent(){
   const t = state.session.tab;
   if(t==='mark-absent') return renderFacultyAbsence();
@@ -784,7 +784,7 @@ function renderFacultyContent(){
   if(t==='workload') return renderFacultyWorkload();
   return renderFacultySchedule();
 }
-
+ 
 /* ================= ADMIN VIEW (Setup / Generate / Timetable / Analytics / Requests) ================= */
 const ADMIN_TABS = [
   { id:'setup', label:'Setup', icon:ICONS.setup },
@@ -793,7 +793,7 @@ const ADMIN_TABS = [
   { id:'analytics', label:'Analytics', icon:ICONS.analytics },
   { id:'requests', label:'Requests', icon:ICONS.inbox },
 ];
-
+ 
 function renderSetup(){
   const s = state;
   return `
@@ -811,7 +811,7 @@ function renderSetup(){
       ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="chip ${s.institution.days.includes(d)?'on':''}" data-day="${d}">${d}</div>`).join('')}
     </div>
   </div>
-
+ 
   <div class="card">
     <h2 class="section-title">Sections / Classes</h2>
     <p class="section-sub">Each section gets its own independent timetable.</p>
@@ -825,7 +825,7 @@ function renderSetup(){
       `).join('') : `<tr><td colspan="2" class="empty">No sections yet — add one above.</td></tr>`}
     </tbody></table>
   </div>
-
+ 
   <div class="card">
     <h2 class="section-title">Subjects &amp; Courses</h2>
     <p class="section-sub">NEP 2020 categories: core, elective, skill enhancement, and lab. Skill courses should stay ≤ 20% of total periods.</p>
@@ -847,7 +847,7 @@ function renderSetup(){
       `).join('') : `<tr><td colspan="4" class="empty">No courses yet.</td></tr>`}
     </tbody></table>
   </div>
-
+ 
   <div class="card">
     <h2 class="section-title">Faculty</h2>
     <p class="section-sub">Match specialization to course names exactly for smart auto-assignment; otherwise any free faculty is used.</p>
@@ -865,7 +865,7 @@ function renderSetup(){
       `).join('') : `<tr><td colspan="4" class="empty">No faculty yet.</td></tr>`}
     </tbody></table>
   </div>
-
+ 
   <div class="card">
     <h2 class="section-title">Rooms</h2>
     <p class="section-sub">Theory, lab and seminar rooms are matched to course room-type automatically.</p>
@@ -884,7 +884,7 @@ function renderSetup(){
   </div>
   `;
 }
-
+ 
 let generating = false;
 function renderGenerate(){
   const s = state;
@@ -922,7 +922,7 @@ function renderGenResult(){
   return `<div class="banner warn"><div class="icon">⚠️</div><div><div class="t">${t.unplaced} session${t.unplaced>1?'s':''} could not be placed</div>
   <div class="d">Try adding another faculty member or room of the right type, or lower a course's periods/week, then regenerate.</div></div></div>`;
 }
-
+ 
 function exportCSV(secId){
   const cells = cellsForSection(secId);
   const days = state.institution.days;
@@ -943,7 +943,7 @@ function exportCSV(secId){
   a.download = `${secName(secId).replace(/\s+/g,'_')}_timetable.csv`;
   document.body.appendChild(a); a.click(); a.remove();
 }
-
+ 
 function renderAdminTimetable(){
   const s = state;
   if(!s.sections.length) return `<div class="card"><p class="empty">Add a section in Setup, then generate a timetable.</p></div>`;
@@ -952,7 +952,7 @@ function renderAdminTimetable(){
   const days = s.institution.days;
   const P = s.institution.periodsPerDay;
   const cells = cellsForSection(sec.id);
-
+ 
   let grid;
   if(state.timetable){
     grid = `<div class="tt-wrap"><table class="tt">
@@ -979,7 +979,7 @@ function renderAdminTimetable(){
   } else {
     grid = `<p class="empty">No timetable generated yet. Go to Generate.</p>`;
   }
-
+ 
   return `
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -999,7 +999,7 @@ function renderAdminTimetable(){
     </div>
   </div>`;
 }
-
+ 
 function renderAdminAnalytics(){
   const s = state;
   if(!s.timetable) return `<div class="card"><p class="empty">Generate a timetable first to see analytics.</p></div>`;
@@ -1008,7 +1008,7 @@ function renderAdminAnalytics(){
   const totalSlots = days.length * P;
   const rBusy = roomBusyMap();
   const fLoad = facultyLoadMap();
-
+ 
   const roomUtil = s.rooms.map(r=>{
     let used = 0;
     days.forEach(d=>{ for(let p=0;p<P;p++){ if(rBusy[`${r.id}-${d}-${p}`]) used++; } });
@@ -1022,7 +1022,7 @@ function renderAdminAnalytics(){
   const byType = {core:0, elective:0, skill:0, lab:0};
   s.subjects.forEach(sub=> byType[sub.type] += sub.periodsPerWeek);
   const skillPct = Math.round((byType.skill/totalPeriods)*100);
-
+ 
   return `
   <div class="card"><h2 class="section-title">Room utilisation</h2><p class="section-sub">Share of the week each room is booked.</p>
     ${roomUtil.map(r=>`<div class="util-row"><div class="top"><span>${r.name}</span><span style="color:var(--teal-dk);">${r.pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${r.pct}%;"></div></div></div>`).join('')}
@@ -1039,7 +1039,7 @@ function renderAdminAnalytics(){
     </div>
   </div>`;
 }
-
+ 
 function renderAdminRequests(){
   const pending = state.swapRequests.filter(r=>r.status==='pending');
   const resolved = state.swapRequests.filter(r=>r.status!=='pending');
@@ -1069,7 +1069,7 @@ function renderAdminRequests(){
     </tbody></table>` : `<p class="empty">No absences logged.</p>`}
   </div>`;
 }
-
+ 
 function renderAdminContent(){
   const t = state.session.tab;
   if(t==='generate') return renderGenerate();
@@ -1078,7 +1078,7 @@ function renderAdminContent(){
   if(t==='requests') return renderAdminRequests();
   return renderSetup();
 }
-
+ 
 /* ================= APP RENDER ================= */
 function tabsForRole(){
   if(state.session.role==='student') return STUDENT_TABS;
@@ -1095,13 +1095,13 @@ function roleLabel(){
   if(state.session.role==='faculty') return `Faculty · ${facName(state.session.facultyId)}`;
   return 'Admin';
 }
-
+ 
 function render(){
   if(!state.session || !state.session.role){ renderLogin(); return; }
   const TABS = tabsForRole();
   const active = TABS.find(t=>t.id===state.session.tab) || TABS[0];
   state.session.tab = active.id;
-
+ 
   document.getElementById('app').innerHTML = `
     <div class="topbar">
       ${chakraSVG(false)}
@@ -1117,12 +1117,12 @@ function render(){
   `;
   bindEvents();
 }
-
+ 
 function bindEvents(){
   document.querySelectorAll('[data-tab]').forEach(b=>{ b.onclick = ()=>{ state.session.tab = b.dataset.tab; persist(); render(); }; });
   const logoutBtn = document.getElementById('logout-btn');
   if(logoutBtn) logoutBtn.onclick = logout;
-
+ 
   const instName = document.getElementById('inst-name');
   if(instName){
     instName.onchange = e=>{ state.institution.name = e.target.value; persist(); };
@@ -1180,7 +1180,7 @@ function bindEvents(){
     };
     document.querySelectorAll('[data-del-room]').forEach(b=>{ b.onclick = ()=>{ state.rooms = state.rooms.filter(r=>r.id!==b.dataset.delRoom); persist(); render(); }; });
   }
-
+ 
   const runBtn = document.getElementById('run-generate');
   if(runBtn){
     runBtn.onclick = ()=>{
@@ -1188,7 +1188,7 @@ function bindEvents(){
       setTimeout(()=>{ generateTimetable(); generating = false; render(); }, 700);
     };
   }
-
+ 
   const ttSection = document.getElementById('tt-section');
   if(ttSection){
     ttSection.onchange = e=>{ state._activeSection = e.target.value; render(); };
@@ -1196,14 +1196,14 @@ function bindEvents(){
     const csvBtn = document.getElementById('tt-csv');
     if(csvBtn) csvBtn.onclick = ()=> exportCSV(state._activeSection || state.sections[0].id);
   }
-
+ 
   document.querySelectorAll('[data-approve]').forEach(b=>{ b.onclick = ()=>{ approveSwap(b.dataset.approve); render(); }; });
   document.querySelectorAll('[data-reject]').forEach(b=>{ b.onclick = ()=>{ rejectSwap(b.dataset.reject); render(); }; });
-
+ 
   document.querySelectorAll('[data-day-filter]').forEach(c=>{ c.onclick = ()=>{ studentDayFilter = c.dataset.dayFilter; render(); }; });
   const stPrint = document.getElementById('st-print');
   if(stPrint) stPrint.onclick = ()=> window.print();
-
+ 
   document.querySelectorAll('[data-mark-absent]').forEach(b=>{
     b.onclick = ()=>{
       if(confirm(`Mark yourself unavailable on ${b.dataset.markAbsent}? This will try to auto-reschedule your classes.`)){
@@ -1223,10 +1223,12 @@ function bindEvents(){
     };
   }
 }
-
+ 
 /* ================= INIT ================= */
 load();
 render();
 </script>
 </body>
 </html>
+ 
+
