@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Kalachakra — AI Timetable Generator | NEP 2020</title>
+<meta name="description" content="Kalachakra generates clash-free, NEP 2020 compliant academic timetables in seconds — with separate Student, Faculty and Admin views.">
+<meta name="theme-color" content="#12142B">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --ink:#12142B;
+  --ink-2:#1B1F3D;
+  --ink-soft:#6A6E8E;
+  --cream:#F7F4EC;
+  --surface:#FFFFFF;
+  --line:#E7E2D6;
+  --marigold:#F2A93B;
+  --marigold-dk:#C9821A;
+  --teal:#2FBFA3;
+  --teal-dk:#1E8D77;
+  --terracotta:#E2654B;
+  --violet:#8B7FD1;
+  --violet-dk:#6C5FC0;
+  --radius:16px;
+  --shadow: 0 8px 30px rgba(18,20,43,0.08);
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+html,body{margin:0; padding:0;}
+body{
+  font-family:'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces', serif; }
+.mono{ font-family:'JetBrains Mono', monospace; }
+
+#app{ display:flex; flex-direction:column; min-height:100vh; width:100%; }
+
+/* ---------- LOGIN SCREEN ---------- */
+.login-wrap{
+  min-height:100vh; width:100%;
+  display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(circle at 30% 20%, #1B1F3D 0%, var(--ink) 60%);
+  padding:24px;
+}
+.login-card{
+  width:100%; max-width:420px;
+  background:var(--surface); border-radius:20px; padding:28px 24px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+.login-logo{ display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+.login-logo .name{ font-family:'Fraunces',serif; font-weight:700; font-size:22px; }
+.login-logo .tag{ font-size:11.5px; color:var(--ink-soft); }
+.role-btn{
+  width:100%; display:flex; align-items:center; gap:14px;
+  padding:16px; border-radius:14px; border:1.5px solid var(--line); background:#fff;
+  margin-bottom:12px; cursor:pointer; text-align:left;
+}
+.role-btn:hover{ border-color:var(--teal); }
+.role-btn .ic{ width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.role-btn.student .ic{ background:rgba(47,191,163,0.15); color:var(--teal-dk); }
+.role-btn.faculty .ic{ background:rgba(242,169,59,0.18); color:var(--marigold-dk); }
+.role-btn.admin .ic{ background:rgba(139,127,209,0.18); color:var(--violet-dk); }
+.role-btn .t1{ font-weight:700; font-size:15px; }
+.role-btn .t2{ font-size:12px; color:var(--ink-soft); }
+.back-link{ font-size:13px; color:var(--ink-soft); cursor:pointer; margin-bottom:14px; display:inline-block; }
+.err-msg{ color:var(--terracotta); font-size:12.5px; font-weight:600; margin:-6px 0 12px; }
+
+/* ---------- APP SHELL ---------- */
+.topbar{
+  display:flex; align-items:center; gap:12px; padding: 14px 18px;
+  background: var(--ink); color: #fff; position:sticky; top:0; z-index:40;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+.topbar .mark{ width:34px; height:34px; flex-shrink:0; }
+.topbar .titles{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+.topbar .titles .name{ font-family:'Fraunces',serif; font-weight:700; font-size:18px; letter-spacing:0.2px; }
+.topbar .titles .tag{ font-size:11px; color:#C9CCE8; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.topbar .spacer{ flex:1; }
+.topbar .badge{ font-size:10.5px; font-weight:600; color:var(--ink); background: var(--marigold); padding:4px 9px; border-radius:999px; white-space:nowrap; }
+.topbar .logout{ background:rgba(255,255,255,0.12); border:none; color:#fff; font-size:11.5px; font-weight:700; padding:7px 11px; border-radius:9px; cursor:pointer; white-space:nowrap; }
+
+.shell{ flex:1; display:flex; width:100%; min-height:0; }
+.rail{ display:none; }
+main{ flex:1; min-width:0; width:100%; padding: 18px 16px 96px 16px; max-width: 980px; margin:0 auto; }
+
+.bottomnav{
+  position:fixed; left:0; right:0; bottom:0; z-index:50; display:flex;
+  background: var(--surface); border-top:1px solid var(--line);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)) 6px;
+  box-shadow: 0 -6px 24px rgba(18,20,43,0.08);
+}
+.bottomnav button{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:none; border:none; color: var(--ink-soft);
+  font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600;
+  padding:6px 2px; border-radius:12px; cursor:pointer;
+}
+.bottomnav button svg{ width:20px; height:20px; }
+.bottomnav button.active{ color: var(--teal-dk); background: rgba(47,191,163,0.1); }
+
+@media (min-width: 860px){
+  .shell{ padding: 0 24px; max-width:1200px; margin:0 auto; gap:24px; }
+  .rail{
+    display:flex; flex-direction:column; gap:4px; width:220px; flex-shrink:0;
+    padding: 20px 10px; margin-top:16px; background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); align-self:flex-start; position:sticky; top:80px;
+  }
+  .rail button{
+    display:flex; align-items:center; gap:10px; background:none; border:none; text-align:left;
+    padding:11px 12px; border-radius:10px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color: var(--ink-soft);
+  }
+  .rail button svg{ width:18px; height:18px; flex-shrink:0; }
+  .rail button.active{ background: var(--ink); color:#fff; }
+  .bottomnav{ display:none; }
+  main{ padding: 24px 0 60px 0; }
+}
+
+.card{ background: var(--surface); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom:16px; border:1px solid var(--line); }
+.section-title{ font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 4px 0; }
+.section-sub{ color:var(--ink-soft); font-size:13.5px; margin:0 0 14px 0; }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:700; }
+.pill.core{ background:rgba(242,169,59,0.16); color:var(--marigold-dk); }
+.pill.elective{ background:rgba(47,191,163,0.14); color:var(--teal-dk); }
+.pill.skill{ background:rgba(139,127,209,0.15); color:var(--violet-dk); }
+.pill.lab{ background:rgba(226,101,75,0.14); color:var(--terracotta); }
+.pill.pending{ background:rgba(242,169,59,0.16); color:var(--marigold-dk); }
+.pill.approved{ background:rgba(47,191,163,0.14); color:var(--teal-dk); }
+.pill.rejected, .pill.conflict{ background:rgba(226,101,75,0.14); color:var(--terracotta); }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:'Inter',sans-serif; font-weight:700; font-size:14px;
+  padding:11px 18px; border-radius:11px; border:none; cursor:pointer;
+  background: var(--ink); color:#fff; transition: transform .12s ease;
+}
+.btn:active{ transform: scale(0.97); }
+.btn.primary{ background: linear-gradient(135deg, var(--teal-dk), var(--teal)); }
+.btn.warn{ background: linear-gradient(135deg, var(--terracotta), #f08165); }
+.btn.ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--line); }
+.btn.danger{ background:transparent; color:var(--terracotta); padding:6px 10px; font-size:12.5px; }
+.btn.small{ padding:8px 12px; font-size:12.5px; }
+.btn:disabled{ opacity:0.5; cursor:not-allowed; }
+.btn-full{ width:100%; }
+
+label{ font-size:12.5px; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:5px; }
+input[type=text], input[type=number], input[type=password], select{
+  width:100%; padding:10px 11px; border-radius:9px; border:1.5px solid var(--line);
+  font-family:'Inter',sans-serif; font-size:14px; background:#fff; color:var(--ink); margin-bottom:12px;
+}
+input:focus, select:focus{ outline:2px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+.grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 10px; }
+@media (max-width:480px){ .grid3{ grid-template-columns:1fr 1fr; } }
+
+.chips{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
+.chip{ padding:7px 12px; border-radius:999px; border:1.5px solid var(--line); font-size:12.5px; font-weight:600; cursor:pointer; background:#fff; color:var(--ink-soft); }
+.chip.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+table.list{ width:100%; border-collapse:collapse; font-size:13px; }
+table.list th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); padding:6px 8px; border-bottom:1.5px solid var(--line); }
+table.list td{ padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.list tr:last-child td{ border-bottom:none; }
+.empty{ text-align:center; color:var(--ink-soft); font-size:13px; padding:22px 10px; }
+
+.stat-row{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+.stat{ flex:1; min-width:110px; background:var(--cream); border-radius:12px; padding:12px 14px; border:1px solid var(--line); }
+.stat .num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat .lbl{ font-size:11.5px; color:var(--ink-soft); margin-top:4px; font-weight:600; }
+
+.chakra{ animation: spin 3.2s linear infinite; }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+
+.gen-stage{ display:flex; flex-direction:column; align-items:center; text-align:center; padding:26px 10px; }
+.gen-stage .chakra-wrap{ width:96px; height:96px; margin-bottom:16px; }
+.gen-stage .msg{ font-family:'Fraunces',serif; font-size:17px; font-weight:600; }
+.gen-stage .sub{ color:var(--ink-soft); font-size:13px; margin-top:5px; }
+
+.banner{ border-radius:12px; padding:14px 16px; margin-bottom:16px; display:flex; gap:12px; align-items:flex-start; }
+.banner.ok{ background:rgba(47,191,163,0.12); border:1px solid rgba(47,191,163,0.3); }
+.banner.warn{ background:rgba(226,101,75,0.1); border:1px solid rgba(226,101,75,0.3); }
+.banner .icon{ flex-shrink:0; margin-top:1px; }
+.banner .t{ font-weight:700; font-size:14px; }
+.banner .d{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+
+.tt-wrap{ overflow-x:auto; border-radius:12px; border:1px solid var(--line); }
+table.tt{ border-collapse:collapse; width:100%; min-width:640px; }
+table.tt th{ background:var(--ink); color:#fff; font-size:11px; padding:9px 6px; text-align:center; position:sticky; top:0; }
+table.tt td{ border:1px solid var(--line); padding:6px; vertical-align:top; min-width:100px; height:64px; font-size:11.5px; }
+table.tt td.time-col, table.tt th.time-col{ background:var(--cream); color:var(--ink); font-family:'JetBrains Mono',monospace; font-size:10.5px; text-align:center; min-width:70px; position:sticky; left:0; }
+.cell-course{ border-radius:8px; padding:6px 7px; height:100%; }
+.cell-course .cn{ font-weight:700; font-size:11.5px; line-height:1.15; }
+.cell-course .cm{ font-size:10px; opacity:0.85; margin-top:2px; }
+.cell-course.core{ background:rgba(242,169,59,0.18); }
+.cell-course.elective{ background:rgba(47,191,163,0.16); }
+.cell-course.skill{ background:rgba(139,127,209,0.18); }
+.cell-course.lab{ background:rgba(226,101,75,0.16); }
+.cell-course.cancelled{ background:repeating-linear-gradient(45deg, rgba(226,101,75,0.18), rgba(226,101,75,0.18) 6px, rgba(226,101,75,0.08) 6px, rgba(226,101,75,0.08) 12px); }
+.cell-empty{ color:var(--line); text-align:center; font-size:11px; }
+
+.bar-track{ height:9px; border-radius:999px; background:var(--line); overflow:hidden; margin-top:6px; }
+.bar-fill{ height:100%; border-radius:999px; background: linear-gradient(90deg, var(--teal-dk), var(--teal)); }
+.util-row{ margin-bottom:14px; }
+.util-row .top{ display:flex; justify-content:space-between; font-size:13px; font-weight:600; }
+
+.notif{ display:flex; gap:10px; padding:12px 0; border-bottom:1px solid var(--line); }
+.notif:last-child{ border-bottom:none; }
+.notif .dot{ width:8px; height:8px; border-radius:50%; background:var(--terracotta); margin-top:6px; flex-shrink:0; }
+.notif .txt{ font-size:13.5px; }
+.notif .ts{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
+
+.agenda-day{ margin-bottom:16px; }
+.agenda-day h3{ font-family:'Fraunces',serif; font-size:15px; margin:0 0 8px 0; }
+.agenda-item{ display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:var(--cream); margin-bottom:7px; border:1px solid var(--line); }
+.agenda-item .l{ font-size:13px; font-weight:600; }
+.agenda-item .r{ font-size:11.5px; color:var(--ink-soft); text-align:right; }
+
+footer.credit{ text-align:center; font-size:11.5px; color:var(--ink-soft); padding:20px 10px 10px; }
+
+@media print{
+  .topbar, .bottomnav, .rail, .no-print{ display:none !important; }
+  body{ background:#fff; }
+  main{ padding:0; max-width:100%; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ================= ICONS ================= */
+function chakraSVG(spin){
+  return `<svg viewBox="0 0 48 48" class="mark ${spin?'chakra':''}" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="21" fill="none" stroke="#F2A93B" stroke-width="2.4"/>
+    <circle cx="24" cy="24" r="4" fill="#2FBFA3"/>
+    ${Array.from({length:12}).map((_,i)=>{
+      const a = (i*30)*Math.PI/180;
+      const x1 = 24+7*Math.cos(a), y1=24+7*Math.sin(a);
+      const x2 = 24+19*Math.cos(a), y2=24+19*Math.sin(a);
+      return `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"/>`;
+    }).join('')}
+  </svg>`;
+}
+const ICONS = {
+  setup: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h7"/></svg>`,
+  generate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>`,
+  timetable: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>`,
+  analytics: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>`,
+  bell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>`,
+  absent: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h4"/><path d="M17 8l4 4M21 8l-4 4"/></svg>`,
+  swap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`,
+  inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`,
+};
+const ADMIN_PASSWORD = '2026';
+
+/* ================= STATE ================= */
+const STORE_KEY = 'kalachakra_v2';
+let state = null;
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function seedDefault(){
+  const secA = { id: uid(), name: 'II EEE - A' };
+  const fac = [
+    { id: uid(), name:'Dr. Meera Krishnan', specializations:['Circuit Theory','Electrical Machines'], maxLoad:18 },
+    { id: uid(), name:'Prof. Karthik Rao', specializations:['Renewable Energy Systems','Electrical Machines Lab'], maxLoad:16 },
+    { id: uid(), name:'Ms. Divya S', specializations:['Python for Engineers'], maxLoad:12 },
+    { id: uid(), name:'Dr. Ganesh Iyer', specializations:['Engineering Mathematics'], maxLoad:18 },
+    { id: uid(), name:'Ms. Priya Anand', specializations:['Professional Communication'], maxLoad:10 },
+  ];
+  const rooms = [
+    { id: uid(), name:'Room 101', type:'theory', capacity:60 },
+    { id: uid(), name:'Room 102', type:'theory', capacity:60 },
+    { id: uid(), name:'EEE Lab', type:'lab', capacity:30 },
+    { id: uid(), name:'Seminar Hall', type:'seminar', capacity:100 },
+  ];
+  const subs = [
+    { id: uid(), sectionId: secA.id, name:'Engineering Mathematics', type:'core', periodsPerWeek:4, roomType:'theory' },
+    { id: uid(), sectionId: secA.id, name:'Circuit Theory', type:'core', periodsPerWeek:4, roomType:'theory' },
+    { id: uid(), sectionId: secA.id, name:'Electrical Machines', type:'core', periodsPerWeek:4, roomType:'theory' },
+    { id: uid(), sectionId: secA.id, name:'Renewable Energy Systems', type:'elective', periodsPerWeek:3, roomType:'theory' },
+    { id: uid(), sectionId: secA.id, name:'Python for Engineers', type:'skill', periodsPerWeek:2, roomType:'theory' },
+    { id: uid(), sectionId: secA.id, name:'Professional Communication', type:'skill', periodsPerWeek:2, roomType:'seminar' },
+    { id: uid(), sectionId: secA.id, name:'Electrical Machines Lab', type:'lab', periodsPerWeek:4, roomType:'lab' },
+  ];
+  return {
+    institution: { name:'Karpagam College of Engineering', days:['Mon','Tue','Wed','Thu','Fri'], periodsPerDay:7, startHour:8 },
+    sections: [secA],
+    subjects: subs,
+    faculty: fac,
+    rooms: rooms,
+    timetable: null,
+    notifications: [],
+    absences: [],
+    swapRequests: [],
+    session: { role:null, sectionId:null, facultyId:null, adminOk:false, tab:null },
+  };
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ state = JSON.parse(raw); }
+  }catch(e){}
+  if(!state) state = seedDefault();
+  state.notifications = state.notifications || [];
+  state.absences = state.absences || [];
+  state.swapRequests = state.swapRequests || [];
+  state.session = state.session || { role:null, sectionId:null, facultyId:null, adminOk:false, tab:null };
+}
+function persist(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+
+/* ================= LOOKUPS ================= */
+function getFaculty(id){ return state.faculty.find(f=>f.id===id); }
+function getRoom(id){ return state.rooms.find(r=>r.id===id); }
+function getSection(id){ return state.sections.find(s=>s.id===id); }
+function facName(id){ const f=getFaculty(id); return f?f.name:'Unassigned'; }
+function roomName(id){ const r=getRoom(id); return r?r.name:'TBD'; }
+function secName(id){ const s=getSection(id); return s?s.name:'—'; }
+
+/* ================= TIME LABELS ================= */
+function periodLabel(idx, startHour){
+  let mins = 0;
+  for(let i=0;i<idx;i++){ mins += 50 + (i===3 ? 40 : 10); }
+  const startTotal = startHour*60 + mins;
+  const endTotal = startTotal + 50;
+  const fmt = t => {
+    let h = Math.floor(t/60), m = t%60;
+    let h12 = h%12; if(h12===0) h12=12;
+    return `${h12}:${m.toString().padStart(2,'0')}`;
+  };
+  return `${fmt(startTotal)}–${fmt(endTotal)} ${startTotal>=720?'PM':'AM'}`;
+}
+function timeSlotStr(day, p){ return `${day}, period ${p+1} (${periodLabel(p, state.institution.startHour)})`; }
+
+/* ================= GENERATION ALGORITHM ================= */
+function generateTimetable(){
+  const days = state.institution.days;
+  const P = state.institution.periodsPerDay;
+
+  let sessions = [];
+  state.subjects.forEach(sub=>{
+    const isLab = sub.type === 'lab';
+    if(isLab){
+      const blocks = Math.max(1, Math.round(sub.periodsPerWeek/2));
+      for(let b=0;b<blocks;b++) sessions.push({subId:sub.id, sub, length:2});
+    } else {
+      for(let s=0;s<sub.periodsPerWeek;s++) sessions.push({subId:sub.id, sub, length:1});
+    }
+  });
+
+  function eligibleFaculty(sub){
+    const named = state.faculty.filter(f => f.specializations.some(sp => sp.toLowerCase()===sub.name.toLowerCase()));
+    return named.length ? named : state.faculty;
+  }
+  function eligibleRooms(sub){
+    return state.rooms.filter(r => r.type === (sub.roomType||'theory'));
+  }
+
+  let best = null;
+  const ATTEMPTS = 80;
+  const t0 = performance.now();
+
+  for(let attempt=0; attempt<ATTEMPTS; attempt++){
+    const secBusy = {}, facBusy = {}, roomBusy = {}, facLoad = {}, secSubjDay = {};
+    const placed = [];
+    let unplaced = 0;
+
+    const order = [...sessions].sort(()=>Math.random()-0.5).sort((a,b)=> b.length - a.length);
+
+    for(const sess of order){
+      const sub = sess.sub;
+      const secId = sub.sectionId;
+      const facs = eligibleFaculty(sub).sort(()=> Math.random()-0.5);
+      const rms = eligibleRooms(sub).sort(()=> Math.random()-0.5);
+      let done = false;
+      if(!facs.length || !rms.length){ unplaced++; continue; }
+
+      for(let pass=0; pass<2 && !done; pass++){
+        const dayOrder = [...days.map((d,i)=>i)].sort(()=>Math.random()-0.5);
+        for(const di of dayOrder){
+          if(done) break;
+          const day = days[di];
+          if(pass===0 && secSubjDay[`${secId}-${sub.id}-${day}`]) continue;
+          const periodStarts = [...Array(P).keys()].sort(()=>Math.random()-0.5);
+          for(const p of periodStarts){
+            if(sess.length===2 && p+1>=P) continue;
+            const slots = sess.length===2 ? [p,p+1] : [p];
+            const secFree = slots.every(s => !secBusy[`${secId}-${day}-${s}`]);
+            if(!secFree) continue;
+
+            let chosenFac=null, chosenRoom=null;
+            for(const f of facs){
+              const load = facLoad[f.id]||0;
+              if(load + sess.length > f.maxLoad) continue;
+              const free = slots.every(s => !facBusy[`${f.id}-${day}-${s}`]);
+              if(free){ chosenFac=f; break; }
+            }
+            if(!chosenFac) continue;
+            for(const r of rms){
+              const free = slots.every(s => !roomBusy[`${r.id}-${day}-${s}`]);
+              if(free){ chosenRoom=r; break; }
+            }
+            if(!chosenRoom) continue;
+
+            slots.forEach(s=>{
+              secBusy[`${secId}-${day}-${s}`]=true;
+              facBusy[`${chosenFac.id}-${day}-${s}`]=true;
+              roomBusy[`${chosenRoom.id}-${day}-${s}`]=true;
+            });
+            facLoad[chosenFac.id] = (facLoad[chosenFac.id]||0) + sess.length;
+            secSubjDay[`${secId}-${sub.id}-${day}`] = true;
+            placed.push({ secId, day, periods: slots, sub, facultyId: chosenFac.id, roomId: chosenRoom.id });
+            done = true;
+            break;
+          }
+        }
+      }
+      if(!done) unplaced++;
+    }
+
+    if(!best || unplaced < best.unplaced) best = { placed, unplaced };
+    if(unplaced===0) break;
+  }
+
+  const t1 = performance.now();
+  const sessionsOut = best.placed.map(pl=>({ id:uid(), secId:pl.secId, day:pl.day, periods:pl.periods, sub:pl.sub, facultyId:pl.facultyId, roomId:pl.roomId, cancelled:false }));
+
+  state.timetable = { sessions: sessionsOut, unplaced: best.unplaced, timeMs: (t1-t0), generatedAt: new Date().toISOString() };
+  state.notifications = [];
+  state.absences = [];
+  state.swapRequests = [];
+  persist();
+  return state.timetable;
+}
+
+/* ---- derived views ---- */
+function sessionsForSection(secId){ return state.timetable ? state.timetable.sessions.filter(s=>s.secId===secId) : []; }
+function sessionsForFaculty(facId){ return state.timetable ? state.timetable.sessions.filter(s=>s.facultyId===facId) : []; }
+function cellsForSection(secId){
+  const map = {};
+  sessionsForSection(secId).forEach(sess=>{
+    sess.periods.forEach((p,idx)=>{ map[`${sess.day}-${p}`] = { session: sess, span: sess.periods.length, isStart: idx===0 }; });
+  });
+  return map;
+}
+function facultyLoadMap(){
+  const m = {};
+  (state.timetable?.sessions||[]).forEach(s=>{ if(!s.cancelled) m[s.facultyId] = (m[s.facultyId]||0) + s.periods.length; });
+  return m;
+}
+function roomBusyMap(){
+  const m = {};
+  (state.timetable?.sessions||[]).forEach(s=>{ if(!s.cancelled) s.periods.forEach(p=> m[`${s.roomId}-${s.day}-${p}`]=true); });
+  return m;
+}
+
+/* ================= ACTIONS: notifications / absence / swap ================= */
+function addNotification(secId, text){ state.notifications.unshift({ id:uid(), secId, text, ts:Date.now() }); persist(); }
+
+function markFacultyAbsent(facultyId, day){
+  const sess = sessionsForFaculty(facultyId).filter(s=>s.day===day && !s.cancelled);
+  sess.forEach(sess1=>{
+    const candidates = state.faculty.filter(f=>f.id!==facultyId && f.specializations.some(sp=>sp.toLowerCase()===sess1.sub.name.toLowerCase()));
+    const pool = candidates.length ? candidates : state.faculty.filter(f=>f.id!==facultyId);
+    let sub = null;
+    for(const f of pool){
+      const busy = state.timetable.sessions.some(s2=> !s2.cancelled && s2.facultyId===f.id && s2.day===sess1.day && s2.periods.some(p=>sess1.periods.includes(p)));
+      if(!busy){ sub = f; break; }
+    }
+    const oldName = facName(facultyId);
+    if(sub){
+      sess1.facultyId = sub.id;
+      addNotification(sess1.secId, `${oldName} is absent — ${sess1.sub.name} class covered by ${sub.name} in ${roomName(sess1.roomId)}.`);
+    } else {
+      sess1.cancelled = true;
+      addNotification(sess1.secId, `${oldName} is absent — ${sess1.sub.name} class cancelled today. Admin will reschedule.`);
+    }
+  });
+  state.absences.unshift({ id:uid(), facultyId, day, ts:Date.now() });
+  persist();
+}
+
+function requestSwap(facultyId, sessionId, requestedDay, requestedPeriod){
+  state.swapRequests.unshift({ id:uid(), facultyId, sessionId, requestedDay, requestedPeriod, status:'pending', ts:Date.now() });
+  persist();
+}
+
+function approveSwap(reqId){
+  const req = state.swapRequests.find(r=>r.id===reqId);
+  if(!req) return;
+  const sess = state.timetable.sessions.find(s=>s.id===req.sessionId);
+  if(!sess){ req.status='rejected'; persist(); return; }
+  const len = sess.periods.length;
+  if(len===2 && req.requestedPeriod+1 >= state.institution.periodsPerDay){ req.status='conflict'; persist(); return; }
+  const newPeriods = len===2 ? [req.requestedPeriod, req.requestedPeriod+1] : [req.requestedPeriod];
+  const others = state.timetable.sessions.filter(s=>s.id!==sess.id && !s.cancelled);
+  const clash = others.some(s=> s.day===req.requestedDay && s.periods.some(p=>newPeriods.includes(p)) &&
+    (s.secId===sess.secId || s.facultyId===sess.facultyId || s.roomId===sess.roomId));
+  if(clash){ req.status='conflict'; persist(); return; }
+  sess.day = req.requestedDay;
+  sess.periods = newPeriods;
+  req.status='approved';
+  addNotification(sess.secId, `${sess.sub.name} moved to ${req.requestedDay}, period ${req.requestedPeriod+1} (swap approved).`);
+  persist();
+}
+function rejectSwap(reqId){ const req = state.swapRequests.find(r=>r.id===reqId); if(req){ req.status='rejected'; persist(); } }
+
+/* ================= LOGIN SCREEN ================= */
+let loginStep = null;
+let adminError = false;
+
+function renderLogin(){
+  let inner = '';
+  if(!loginStep){
+    inner = `
+      <div class="login-logo">${chakraSVG(false)}<div><div class="name">Kalachakra</div><div class="tag">AI Timetable Generator · NEP 2020</div></div></div>
+      <p class="section-sub">Who's signing in?</p>
+      <div class="role-btn student" data-role="student"><div class="ic">${ICONS.timetable}</div><div><div class="t1">Student</div><div class="t2">View your section's timetable</div></div></div>
+      <div class="role-btn faculty" data-role="faculty"><div class="ic">${ICONS.absent}</div><div><div class="t1">Faculty</div><div class="t2">View schedule, mark absence, request swaps</div></div></div>
+      <div class="role-btn admin" data-role="admin"><div class="ic">${ICONS.setup}</div><div><div class="t1">Admin</div><div class="t2">Full setup, generate, approve changes</div></div></div>
+    `;
+  } else if(loginStep === 'student'){
+    if(!state.sections.length){
+      inner = `<span class="back-link" data-back="1">← Back</span><p class="empty">No sections set up yet. Ask your admin to add one first.</p>`;
+    } else {
+      inner = `
+        <span class="back-link" data-back="1">← Back</span>
+        <h2 class="section-title">I'm a student</h2>
+        <p class="section-sub">Pick your section to see your weekly timetable.</p>
+        <label>Section</label>
+        <select id="login-section">${state.sections.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+        <button class="btn primary btn-full" id="login-continue">Continue</button>
+      `;
+    }
+  } else if(loginStep === 'faculty'){
+    if(!state.faculty.length){
+      inner = `<span class="back-link" data-back="1">← Back</span><p class="empty">No faculty set up yet. Ask your admin to add faculty first.</p>`;
+    } else {
+      inner = `
+        <span class="back-link" data-back="1">← Back</span>
+        <h2 class="section-title">I'm faculty</h2>
+        <p class="section-sub">Pick your name to see your schedule and workload.</p>
+        <label>Name</label>
+        <select id="login-faculty">${state.faculty.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}</select>
+        <button class="btn primary btn-full" id="login-continue">Continue</button>
+      `;
+    }
+  } else if(loginStep === 'admin'){
+    inner = `
+      <span class="back-link" data-back="1">← Back</span>
+      <h2 class="section-title">Admin sign-in</h2>
+      <p class="section-sub">Enter the admin password to manage setup and generation.</p>
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="••••">
+      ${adminError ? `<div class="err-msg">Incorrect password. Try again.</div>` : ''}
+      <button class="btn primary btn-full" id="login-continue">Continue</button>
+    `;
+  }
+  document.getElementById('app').innerHTML = `<div class="login-wrap"><div class="login-card">${inner}</div></div>`;
+  bindLoginEvents();
+}
+
+function bindLoginEvents(){
+  document.querySelectorAll('[data-role]').forEach(b=>{ b.onclick = ()=>{ loginStep = b.dataset.role; adminError=false; renderLogin(); }; });
+  const back = document.querySelector('[data-back]');
+  if(back) back.onclick = ()=>{ loginStep = null; adminError=false; renderLogin(); };
+  const cont = document.getElementById('login-continue');
+  if(cont){
+    cont.onclick = ()=>{
+      if(loginStep==='student'){
+        const sectionId = document.getElementById('login-section').value;
+        state.session = { role:'student', sectionId, facultyId:null, adminOk:false, tab:'my-timetable' };
+        persist(); loginStep=null; render();
+      } else if(loginStep==='faculty'){
+        const facultyId = document.getElementById('login-faculty').value;
+        state.session = { role:'faculty', sectionId:null, facultyId, adminOk:false, tab:'my-schedule' };
+        persist(); loginStep=null; render();
+      } else if(loginStep==='admin'){
+        const pw = document.getElementById('login-password').value;
+        if(pw === ADMIN_PASSWORD){
+          state.session = { role:'admin', sectionId:null, facultyId:null, adminOk:true, tab:'setup' };
+          persist(); loginStep=null; adminError=false; render();
+        } else { adminError = true; renderLogin(); }
+      }
+    };
+  }
+}
+
+function logout(){ state.session = { role:null, sectionId:null, facultyId:null, adminOk:false, tab:null }; persist(); loginStep=null; render(); }
+
+/* ================= SHARED: TYPE PILL ================= */
+function typePill(type){ return `<span class="pill ${type}">${type}</span>`; }
+
+/* ================= STUDENT VIEW ================= */
+const STUDENT_TABS = [
+  { id:'my-timetable', label:'Timetable', icon:ICONS.timetable },
+  { id:'notifications', label:'Notices', icon:ICONS.bell },
+];
+let studentDayFilter = 'all';
+
+function renderStudentTimetable(){
+  const secId = state.session.sectionId;
+  const sec = getSection(secId);
+  const days = state.institution.days;
+  const P = state.institution.periodsPerDay;
+  const cells = cellsForSection(secId);
+  const filterDays = studentDayFilter==='all' ? days : [studentDayFilter];
+
+  return `
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div><h2 class="section-title" style="margin-bottom:2px;">${sec?sec.name:''}</h2><p class="section-sub" style="margin-bottom:0;">${state.institution.name}</p></div>
+      <button class="btn ghost small no-print" id="st-print">Download / Print</button>
+    </div>
+  </div>
+  <div class="card no-print">
+    <label>Filter by day</label>
+    <div class="chips">
+      <div class="chip ${studentDayFilter==='all'?'on':''}" data-day-filter="all">All week</div>
+      ${days.map(d=>`<div class="chip ${studentDayFilter===d?'on':''}" data-day-filter="${d}">${d}</div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    ${!state.timetable ? `<p class="empty">Your admin hasn't generated a timetable yet.</p>` : `
+    <div class="tt-wrap"><table class="tt">
+      <thead><tr><th class="time-col">Period</th>${filterDays.map(d=>`<th>${d}</th>`).join('')}</tr></thead>
+      <tbody>
+      ${Array.from({length:P}).map((_,p)=>`
+        <tr>
+          <td class="time-col">${p+1}<br>${periodLabel(p, state.institution.startHour)}</td>
+          ${filterDays.map(d=>{
+            const c = cells[`${d}-${p}`];
+            if(!c) return `<td class="cell-empty">—</td>`;
+            if(!c.isStart && c.span>1) return ``;
+            const sess = c.session;
+            return `<td ${c.span>1?`rowspan="${c.span}"`:''}><div class="cell-course ${sess.sub.type} ${sess.cancelled?'cancelled':''}">
+              <div class="cn">${sess.sub.name}${sess.cancelled?' (cancelled)':''}</div>
+              <div class="cm">${facName(sess.facultyId).split(' ').slice(0,2).join(' ')}</div>
+              <div class="cm">${roomName(sess.roomId)}</div>
+            </div></td>`;
+          }).join('')}
+        </tr>
+      `).join('')}
+      </tbody>
+    </table></div>`}
+  </div>
+  <div class="card no-print">
+    <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:12.5px;">
+      <span>${typePill('core')} Core</span><span>${typePill('elective')} Elective</span>
+      <span>${typePill('skill')} Skill</span><span>${typePill('lab')} Lab</span>
+    </div>
+  </div>
+  `;
+}
+
+function renderStudentNotifications(){
+  const secId = state.session.sectionId;
+  const list = state.notifications.filter(n=>n.secId===secId);
+  return `
+  <div class="card">
+    <h2 class="section-title">Notices</h2>
+    <p class="section-sub">Absences and schedule changes affecting your section.</p>
+    ${list.length ? list.map(n=>`
+      <div class="notif"><div class="dot"></div><div><div class="txt">${n.text}</div><div class="ts">${new Date(n.ts).toLocaleString()}</div></div></div>
+    `).join('') : `<p class="empty">No notices yet.</p>`}
+  </div>`;
+}
+
+function renderStudentContent(){
+  if(state.session.tab==='notifications') return renderStudentNotifications();
+  return renderStudentTimetable();
+}
+
+/* ================= FACULTY VIEW ================= */
+const FACULTY_TABS = [
+  { id:'my-schedule', label:'Schedule', icon:ICONS.timetable },
+  { id:'mark-absent', label:'Absence', icon:ICONS.absent },
+  { id:'request-swap', label:'Swap', icon:ICONS.swap },
+  { id:'workload', label:'Workload', icon:ICONS.clock },
+];
+
+function renderFacultySchedule(){
+  const facId = state.session.facultyId;
+  const days = state.institution.days;
+  const sess = sessionsForFaculty(facId).sort((a,b)=> days.indexOf(a.day)-days.indexOf(b.day) || a.periods[0]-b.periods[0]);
+  return `
+  <div class="card"><h2 class="section-title">${facName(facId)}</h2><p class="section-sub">Your weekly teaching schedule, across all sections.</p></div>
+  ${!state.timetable ? `<div class="card"><p class="empty">No timetable generated yet.</p></div>` :
+    days.map(d=>{
+      const items = sess.filter(s=>s.day===d);
+      if(!items.length) return '';
+      return `<div class="card agenda-day"><h3>${d}</h3>
+        ${items.map(s=>`
+          <div class="agenda-item">
+            <div class="l">${s.sub.name} ${typePill(s.sub.type)}${s.cancelled?' <span style="color:var(--terracotta);font-weight:700;">(cancelled)</span>':''}</div>
+            <div class="r">${secName(s.secId)}<br>${roomName(s.roomId)} · P${s.periods[0]+1}${s.periods.length>1?'-'+ (s.periods[s.periods.length-1]+1):''}</div>
+          </div>
+        `).join('')}
+      </div>`;
+    }).join('') || `<div class="card"><p class="empty">You have no classes assigned this week.</p></div>`
+  }`;
+}
+
+function renderFacultyAbsence(){
+  const facId = state.session.facultyId;
+  const days = [...new Set(sessionsForFaculty(facId).map(s=>s.day))];
+  const myAbsences = state.absences.filter(a=>a.facultyId===facId);
+  return `
+  <div class="card">
+    <h2 class="section-title">Mark yourself unavailable</h2>
+    <p class="section-sub">This automatically finds a substitute where possible and notifies affected sections.</p>
+    ${!state.timetable ? `<p class="empty">No timetable generated yet.</p>` :
+      days.length ? days.map(d=>`
+        <button class="btn warn btn-full" style="margin-bottom:10px;" data-mark-absent="${d}">I'm unavailable on ${d}</button>
+      `).join('') : `<p class="empty">You have no classes to mark absent.</p>`
+    }
+  </div>
+  <div class="card">
+    <h2 class="section-title">Your absence log</h2>
+    ${myAbsences.length ? `<table class="list"><thead><tr><th>Day</th><th>Marked</th></tr></thead><tbody>
+      ${myAbsences.map(a=>`<tr><td>${a.day}</td><td>${new Date(a.ts).toLocaleString()}</td></tr>`).join('')}
+    </tbody></table>` : `<p class="empty">No absences marked yet.</p>`}
+  </div>`;
+}
+
+function renderFacultySwap(){
+  const facId = state.session.facultyId;
+  const days = state.institution.days;
+  const P = state.institution.periodsPerDay;
+  const mySessions = sessionsForFaculty(facId).filter(s=>!s.cancelled);
+  const myRequests = state.swapRequests.filter(r=>r.facultyId===facId);
+  return `
+  <div class="card">
+    <h2 class="section-title">Request a slot change</h2>
+    <p class="section-sub">Submit a request — your admin will review and approve it.</p>
+    ${!mySessions.length ? `<p class="empty">You have no scheduled sessions to swap.</p>` : `
+      <label>Which class</label>
+      <select id="swap-session">${mySessions.map(s=>`<option value="${s.id}">${s.sub.name} — ${secName(s.secId)} — ${timeSlotStr(s.day, s.periods[0])}</option>`).join('')}</select>
+      <div class="grid2">
+        <div><label>Requested day</label><select id="swap-day">${days.map(d=>`<option value="${d}">${d}</option>`).join('')}</select></div>
+        <div><label>Requested start period</label><select id="swap-period">${Array.from({length:P}).map((_,p)=>`<option value="${p}">P${p+1} (${periodLabel(p,state.institution.startHour)})</option>`).join('')}</select></div>
+      </div>
+      <button class="btn primary btn-full" id="swap-submit">Submit request</button>
+    `}
+  </div>
+  <div class="card">
+    <h2 class="section-title">Your requests</h2>
+    ${myRequests.length ? `<table class="list"><thead><tr><th>Requested</th><th>Status</th></tr></thead><tbody>
+      ${myRequests.map(r=>`<tr><td>${r.requestedDay}, P${r.requestedPeriod+1}</td><td><span class="pill ${r.status}">${r.status}</span></td></tr>`).join('')}
+    </tbody></table>` : `<p class="empty">No requests submitted yet.</p>`}
+  </div>`;
+}
+
+function renderFacultyWorkload(){
+  const facId = state.session.facultyId;
+  const f = getFaculty(facId);
+  const load = facultyLoadMap()[facId] || 0;
+  const pct = Math.min(100, Math.round((load/f.maxLoad)*100));
+  return `
+  <div class="card">
+    <h2 class="section-title">Your workload</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="num">${load}</div><div class="lbl">Periods / week</div></div>
+      <div class="stat"><div class="num">${f.maxLoad}</div><div class="lbl">Weekly cap</div></div>
+      <div class="stat"><div class="num">${pct}%</div><div class="lbl">Utilised</div></div>
+    </div>
+    <div class="bar-track" style="margin-top:14px;"><div class="bar-fill" style="width:${pct}%; background:linear-gradient(90deg, var(--marigold-dk), var(--marigold));"></div></div>
+    <p class="section-sub" style="margin-top:12px;">Specializations: ${f.specializations.join(', ')||'—'}</p>
+  </div>`;
+}
+
+function renderFacultyContent(){
+  const t = state.session.tab;
+  if(t==='mark-absent') return renderFacultyAbsence();
+  if(t==='request-swap') return renderFacultySwap();
+  if(t==='workload') return renderFacultyWorkload();
+  return renderFacultySchedule();
+}
+
+/* ================= ADMIN VIEW (Setup / Generate / Timetable / Analytics / Requests) ================= */
+const ADMIN_TABS = [
+  { id:'setup', label:'Setup', icon:ICONS.setup },
+  { id:'generate', label:'Generate', icon:ICONS.generate },
+  { id:'timetable', label:'Timetable', icon:ICONS.timetable },
+  { id:'analytics', label:'Analytics', icon:ICONS.analytics },
+  { id:'requests', label:'Requests', icon:ICONS.inbox },
+];
+
+function renderSetup(){
+  const s = state;
+  return `
+  <div class="card">
+    <h2 class="section-title">Institution</h2>
+    <p class="section-sub">Basic details used to lay out the weekly grid.</p>
+    <label>Institution name</label>
+    <input type="text" id="inst-name" value="${s.institution.name}">
+    <div class="grid2">
+      <div><label>Periods per day</label><input type="number" id="inst-periods" min="4" max="10" value="${s.institution.periodsPerDay}"></div>
+      <div><label>Day starts at (hr, 24h)</label><input type="number" id="inst-start" min="6" max="11" value="${s.institution.startHour}"></div>
+    </div>
+    <label>Working days</label>
+    <div class="chips" id="days-chips">
+      ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="chip ${s.institution.days.includes(d)?'on':''}" data-day="${d}">${d}</div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Sections / Classes</h2>
+    <p class="section-sub">Each section gets its own independent timetable.</p>
+    <div class="grid2" style="align-items:end;">
+      <div><label>Section name</label><input type="text" id="new-section" placeholder="e.g. III CSE - B"></div>
+      <div><button class="btn primary btn-full" id="add-section" style="margin-bottom:12px;">+ Add section</button></div>
+    </div>
+    <table class="list"><thead><tr><th>Section</th><th></th></tr></thead><tbody>
+      ${s.sections.length? s.sections.map(sec=>`
+        <tr><td>${sec.name}</td><td style="text-align:right;"><button class="btn danger" data-del-section="${sec.id}">Remove</button></td></tr>
+      `).join('') : `<tr><td colspan="2" class="empty">No sections yet — add one above.</td></tr>`}
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Subjects &amp; Courses</h2>
+    <p class="section-sub">NEP 2020 categories: core, elective, skill enhancement, and lab. Skill courses should stay ≤ 20% of total periods.</p>
+    <div class="grid2">
+      <div><label>Section</label><select id="sub-section">${s.sections.map(sec=>`<option value="${sec.id}">${sec.name}</option>`).join('')}</select></div>
+      <div><label>Course name</label><input type="text" id="sub-name" placeholder="e.g. Digital Signal Processing"></div>
+    </div>
+    <div class="grid3">
+      <div><label>Type</label><select id="sub-type"><option value="core">Core</option><option value="elective">Elective</option><option value="skill">Skill</option><option value="lab">Lab</option></select></div>
+      <div><label>Periods / week</label><input type="number" id="sub-periods" min="1" max="8" value="3"></div>
+      <div><label>Room type</label><select id="sub-room"><option value="theory">Theory</option><option value="lab">Lab</option><option value="seminar">Seminar</option></select></div>
+    </div>
+    <button class="btn primary btn-full" id="add-subject">+ Add course</button>
+    <table class="list" style="margin-top:14px;"><thead><tr><th>Course</th><th>Type</th><th>Pd/wk</th><th></th></tr></thead><tbody>
+      ${s.subjects.length? s.subjects.map(sub=>`
+        <tr><td>${sub.name}<br><span style="color:var(--ink-soft);font-size:11px;">${secName(sub.sectionId)}</span></td>
+        <td>${typePill(sub.type)}</td><td>${sub.periodsPerWeek}</td>
+        <td style="text-align:right;"><button class="btn danger" data-del-subject="${sub.id}">Remove</button></td></tr>
+      `).join('') : `<tr><td colspan="4" class="empty">No courses yet.</td></tr>`}
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Faculty</h2>
+    <p class="section-sub">Match specialization to course names exactly for smart auto-assignment; otherwise any free faculty is used.</p>
+    <div class="grid2">
+      <div><label>Name</label><input type="text" id="fac-name" placeholder="e.g. Dr. Arun Kumar"></div>
+      <div><label>Max periods / week</label><input type="number" id="fac-max" min="4" max="30" value="18"></div>
+    </div>
+    <label>Specializations (comma separated course names)</label>
+    <input type="text" id="fac-spec" placeholder="e.g. Circuit Theory, Electrical Machines">
+    <button class="btn primary btn-full" id="add-faculty">+ Add faculty</button>
+    <table class="list" style="margin-top:14px;"><thead><tr><th>Name</th><th>Specialization</th><th>Load</th><th></th></tr></thead><tbody>
+      ${s.faculty.length? s.faculty.map(f=>`
+        <tr><td>${f.name}</td><td style="font-size:11.5px;color:var(--ink-soft);">${f.specializations.join(', ')||'—'}</td><td>${f.maxLoad}/wk</td>
+        <td style="text-align:right;"><button class="btn danger" data-del-faculty="${f.id}">Remove</button></td></tr>
+      `).join('') : `<tr><td colspan="4" class="empty">No faculty yet.</td></tr>`}
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Rooms</h2>
+    <p class="section-sub">Theory, lab and seminar rooms are matched to course room-type automatically.</p>
+    <div class="grid3">
+      <div><label>Room name</label><input type="text" id="room-name" placeholder="e.g. Room 205"></div>
+      <div><label>Type</label><select id="room-type"><option value="theory">Theory</option><option value="lab">Lab</option><option value="seminar">Seminar</option></select></div>
+      <div><label>Capacity</label><input type="number" id="room-cap" min="10" max="300" value="60"></div>
+    </div>
+    <button class="btn primary btn-full" id="add-room">+ Add room</button>
+    <table class="list" style="margin-top:14px;"><thead><tr><th>Room</th><th>Type</th><th>Cap.</th><th></th></tr></thead><tbody>
+      ${s.rooms.length? s.rooms.map(r=>`
+        <tr><td>${r.name}</td><td>${r.type}</td><td>${r.capacity}</td>
+        <td style="text-align:right;"><button class="btn danger" data-del-room="${r.id}">Remove</button></td></tr>
+      `).join('') : `<tr><td colspan="4" class="empty">No rooms yet.</td></tr>`}
+    </tbody></table>
+  </div>
+  `;
+}
+
+let generating = false;
+function renderGenerate(){
+  const s = state;
+  return `
+  <div class="card">
+    <h2 class="section-title">Ready to generate</h2>
+    <p class="section-sub">Kalachakra checks every faculty specialization, room type and weekly load limit, then builds a clash-free grid.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">${s.sections.length}</div><div class="lbl">Sections</div></div>
+      <div class="stat"><div class="num">${s.subjects.length}</div><div class="lbl">Courses</div></div>
+      <div class="stat"><div class="num">${s.faculty.length}</div><div class="lbl">Faculty</div></div>
+      <div class="stat"><div class="num">${s.rooms.length}</div><div class="lbl">Rooms</div></div>
+    </div>
+  </div>
+  ${generating ? `
+  <div class="card gen-stage">
+    <div class="chakra-wrap">${chakraSVG(true)}</div>
+    <div class="msg">Weaving the weekly grid…</div>
+    <div class="sub">Matching faculty, rooms and load limits</div>
+  </div>` : `
+  <div class="card">
+    <button class="btn primary btn-full" id="run-generate" ${(!s.sections.length||!s.subjects.length)?'disabled':''}>${chakraSVG(false)} &nbsp;Generate timetable</button>
+    ${(!s.sections.length||!s.subjects.length) ? `<p class="section-sub" style="margin-top:10px;">Add at least one section and one course in Setup first.</p>` : ''}
+    ${s.timetable ? `<p class="section-sub" style="margin-top:10px;">Regenerating replaces the current schedule, notifications, absences and pending swap requests.</p>` : ''}
+  </div>`}
+  ${(!generating && s.timetable) ? renderGenResult() : ''}
+  `;
+}
+function renderGenResult(){
+  const t = state.timetable;
+  if(t.unplaced === 0){
+    return `<div class="banner ok"><div class="icon">✅</div><div><div class="t">Zero clashes — generated in ${(t.timeMs/1000).toFixed(2)}s</div>
+    <div class="d">Every course is placed with a free faculty member and a matching room.</div></div></div>`;
+  }
+  return `<div class="banner warn"><div class="icon">⚠️</div><div><div class="t">${t.unplaced} session${t.unplaced>1?'s':''} could not be placed</div>
+  <div class="d">Try adding another faculty member or room of the right type, or lower a course's periods/week, then regenerate.</div></div></div>`;
+}
+
+function exportCSV(secId){
+  const cells = cellsForSection(secId);
+  const days = state.institution.days;
+  const P = state.institution.periodsPerDay;
+  let rows = [['Day','Period','Time','Course','Type','Faculty','Room']];
+  days.forEach(d=>{
+    for(let p=0;p<P;p++){
+      const c = cells[`${d}-${p}`];
+      if(c && c.isStart){
+        rows.push([d, p+1, periodLabel(p,state.institution.startHour), c.session.sub.name, c.session.sub.type, facName(c.session.facultyId), roomName(c.session.roomId)]);
+      }
+    }
+  });
+  const csv = rows.map(r=> r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${secName(secId).replace(/\s+/g,'_')}_timetable.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function renderAdminTimetable(){
+  const s = state;
+  if(!s.sections.length) return `<div class="card"><p class="empty">Add a section in Setup, then generate a timetable.</p></div>`;
+  const sec = s.sections.find(x=>x.id===s._activeSection) || s.sections[0];
+  s._activeSection = sec.id;
+  const days = s.institution.days;
+  const P = s.institution.periodsPerDay;
+  const cells = cellsForSection(sec.id);
+
+  let grid;
+  if(state.timetable){
+    grid = `<div class="tt-wrap"><table class="tt">
+      <thead><tr><th class="time-col">Period</th>${days.map(d=>`<th>${d}</th>`).join('')}</tr></thead>
+      <tbody>
+      ${Array.from({length:P}).map((_,p)=>`
+        <tr>
+          <td class="time-col">${p+1}<br>${periodLabel(p, s.institution.startHour)}</td>
+          ${days.map(d=>{
+            const c = cells[`${d}-${p}`];
+            if(!c) return `<td class="cell-empty">—</td>`;
+            if(!c.isStart && c.span>1) return ``;
+            const sess = c.session;
+            return `<td ${c.span>1?`rowspan="${c.span}"`:''}><div class="cell-course ${sess.sub.type} ${sess.cancelled?'cancelled':''}">
+              <div class="cn">${sess.sub.name}${sess.cancelled?' (cancelled)':''}</div>
+              <div class="cm">${facName(sess.facultyId).split(' ').slice(0,2).join(' ')}</div>
+              <div class="cm">${roomName(sess.roomId)}</div>
+            </div></td>`;
+          }).join('')}
+        </tr>
+      `).join('')}
+      </tbody>
+    </table></div>`;
+  } else {
+    grid = `<p class="empty">No timetable generated yet. Go to Generate.</p>`;
+  }
+
+  return `
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div><h2 class="section-title" style="margin-bottom:2px;">Weekly timetable</h2><p class="section-sub" style="margin-bottom:0;">${s.institution.name}</p></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;" class="no-print">
+        <select id="tt-section" style="margin-bottom:0; width:auto;">${s.sections.map(sc=>`<option value="${sc.id}" ${sc.id===sec.id?'selected':''}>${sc.name}</option>`).join('')}</select>
+        <button class="btn ghost small" id="tt-csv">Export CSV</button>
+        <button class="btn ghost small" id="tt-print">Print / PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">${grid}</div>
+  <div class="card no-print">
+    <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:12.5px;">
+      <span>${typePill('core')} Core</span><span>${typePill('elective')} Elective</span>
+      <span>${typePill('skill')} Skill</span><span>${typePill('lab')} Lab</span>
+    </div>
+  </div>`;
+}
+
+function renderAdminAnalytics(){
+  const s = state;
+  if(!s.timetable) return `<div class="card"><p class="empty">Generate a timetable first to see analytics.</p></div>`;
+  const days = s.institution.days;
+  const P = s.institution.periodsPerDay;
+  const totalSlots = days.length * P;
+  const rBusy = roomBusyMap();
+  const fLoad = facultyLoadMap();
+
+  const roomUtil = s.rooms.map(r=>{
+    let used = 0;
+    days.forEach(d=>{ for(let p=0;p<P;p++){ if(rBusy[`${r.id}-${d}-${p}`]) used++; } });
+    return { name:r.name, pct: Math.round((used/totalSlots)*100) };
+  });
+  const facLoadArr = s.faculty.map(f=>{
+    const load = fLoad[f.id]||0;
+    return { name:f.name, load, max:f.maxLoad, pct: Math.min(100, Math.round((load/f.maxLoad)*100)) };
+  });
+  const totalPeriods = s.subjects.reduce((a,b)=>a+b.periodsPerWeek,0) || 1;
+  const byType = {core:0, elective:0, skill:0, lab:0};
+  s.subjects.forEach(sub=> byType[sub.type] += sub.periodsPerWeek);
+  const skillPct = Math.round((byType.skill/totalPeriods)*100);
+
+  return `
+  <div class="card"><h2 class="section-title">Room utilisation</h2><p class="section-sub">Share of the week each room is booked.</p>
+    ${roomUtil.map(r=>`<div class="util-row"><div class="top"><span>${r.name}</span><span style="color:var(--teal-dk);">${r.pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${r.pct}%;"></div></div></div>`).join('')}
+  </div>
+  <div class="card"><h2 class="section-title">Faculty load</h2><p class="section-sub">Periods assigned against each faculty member's weekly cap.</p>
+    ${facLoadArr.map(f=>`<div class="util-row"><div class="top"><span>${f.name}</span><span>${f.load}/${f.max} pd</span></div><div class="bar-track"><div class="bar-fill" style="width:${f.pct}%; background:linear-gradient(90deg, var(--marigold-dk), var(--marigold));"></div></div></div>`).join('')}
+  </div>
+  <div class="card"><h2 class="section-title">NEP 2020 course mix</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="num">${byType.core}</div><div class="lbl">Core pd/wk</div></div>
+      <div class="stat"><div class="num">${byType.elective}</div><div class="lbl">Elective pd/wk</div></div>
+      <div class="stat"><div class="num">${byType.lab}</div><div class="lbl">Lab pd/wk</div></div>
+      <div class="stat" style="background:${skillPct<=20?'rgba(47,191,163,0.12)':'rgba(226,101,75,0.12)'};"><div class="num">${skillPct}%</div><div class="lbl">Skill ${skillPct<=20?'✓ within 20%':'⚠ over 20%'}</div></div>
+    </div>
+  </div>`;
+}
+
+function renderAdminRequests(){
+  const pending = state.swapRequests.filter(r=>r.status==='pending');
+  const resolved = state.swapRequests.filter(r=>r.status!=='pending');
+  const recentAbsences = state.absences.slice(0,10);
+  return `
+  <div class="card">
+    <h2 class="section-title">Pending swap requests</h2>
+    ${pending.length ? `<table class="list"><thead><tr><th>Faculty</th><th>Requested</th><th></th></tr></thead><tbody>
+      ${pending.map(r=>{
+        const sess = state.timetable ? state.timetable.sessions.find(s=>s.id===r.sessionId) : null;
+        return `<tr><td>${facName(r.facultyId)}${sess?`<br><span style="color:var(--ink-soft);font-size:11px;">${sess.sub.name} · ${secName(sess.secId)}</span>`:''}</td>
+        <td>${r.requestedDay}, P${r.requestedPeriod+1}</td>
+        <td style="text-align:right; white-space:nowrap;"><button class="btn small primary" data-approve="${r.id}">Approve</button> <button class="btn small danger" data-reject="${r.id}">Reject</button></td></tr>`;
+      }).join('')}
+    </tbody></table>` : `<p class="empty">No pending requests.</p>`}
+  </div>
+  <div class="card">
+    <h2 class="section-title">Resolved requests</h2>
+    ${resolved.length ? `<table class="list"><thead><tr><th>Faculty</th><th>Requested</th><th>Status</th></tr></thead><tbody>
+      ${resolved.map(r=>`<tr><td>${facName(r.facultyId)}</td><td>${r.requestedDay}, P${r.requestedPeriod+1}</td><td><span class="pill ${r.status}">${r.status}</span></td></tr>`).join('')}
+    </tbody></table>` : `<p class="empty">Nothing resolved yet.</p>`}
+  </div>
+  <div class="card">
+    <h2 class="section-title">Recent absence notices</h2>
+    ${recentAbsences.length ? `<table class="list"><thead><tr><th>Faculty</th><th>Day</th><th>Marked</th></tr></thead><tbody>
+      ${recentAbsences.map(a=>`<tr><td>${facName(a.facultyId)}</td><td>${a.day}</td><td>${new Date(a.ts).toLocaleString()}</td></tr>`).join('')}
+    </tbody></table>` : `<p class="empty">No absences logged.</p>`}
+  </div>`;
+}
+
+function renderAdminContent(){
+  const t = state.session.tab;
+  if(t==='generate') return renderGenerate();
+  if(t==='timetable') return renderAdminTimetable();
+  if(t==='analytics') return renderAdminAnalytics();
+  if(t==='requests') return renderAdminRequests();
+  return renderSetup();
+}
+
+/* ================= APP RENDER ================= */
+function tabsForRole(){
+  if(state.session.role==='student') return STUDENT_TABS;
+  if(state.session.role==='faculty') return FACULTY_TABS;
+  return ADMIN_TABS;
+}
+function contentForRole(){
+  if(state.session.role==='student') return renderStudentContent();
+  if(state.session.role==='faculty') return renderFacultyContent();
+  return renderAdminContent();
+}
+function roleLabel(){
+  if(state.session.role==='student') return `Student · ${secName(state.session.sectionId)}`;
+  if(state.session.role==='faculty') return `Faculty · ${facName(state.session.facultyId)}`;
+  return 'Admin';
+}
+
+function render(){
+  if(!state.session || !state.session.role){ renderLogin(); return; }
+  const TABS = tabsForRole();
+  const active = TABS.find(t=>t.id===state.session.tab) || TABS[0];
+  state.session.tab = active.id;
+
+  document.getElementById('app').innerHTML = `
+    <div class="topbar">
+      ${chakraSVG(false)}
+      <div class="titles"><div class="name">Kalachakra</div><div class="tag">${roleLabel()}</div></div>
+      <div class="spacer"></div>
+      <button class="logout no-print" id="logout-btn">Switch role</button>
+    </div>
+    <div class="shell">
+      <nav class="rail">${TABS.map(t=>`<button data-tab="${t.id}" class="${t.id===active.id?'active':''}">${t.icon}<span>${t.label}</span></button>`).join('')}</nav>
+      <main>${contentForRole()}</main>
+    </div>
+    <nav class="bottomnav no-print">${TABS.map(t=>`<button data-tab="${t.id}" class="${t.id===active.id?'active':''}">${t.icon}<span>${t.label}</span></button>`).join('')}</nav>
+  `;
+  bindEvents();
+}
+
+function bindEvents(){
+  document.querySelectorAll('[data-tab]').forEach(b=>{ b.onclick = ()=>{ state.session.tab = b.dataset.tab; persist(); render(); }; });
+  const logoutBtn = document.getElementById('logout-btn');
+  if(logoutBtn) logoutBtn.onclick = logout;
+
+  const instName = document.getElementById('inst-name');
+  if(instName){
+    instName.onchange = e=>{ state.institution.name = e.target.value; persist(); };
+    document.getElementById('inst-periods').onchange = e=>{ state.institution.periodsPerDay = Math.max(4, parseInt(e.target.value)||7); persist(); render(); };
+    document.getElementById('inst-start').onchange = e=>{ state.institution.startHour = parseInt(e.target.value)||8; persist(); render(); };
+    document.querySelectorAll('#days-chips .chip').forEach(c=>{
+      c.onclick = ()=>{
+        const day = c.dataset.day;
+        const i = state.institution.days.indexOf(day);
+        if(i>=0) state.institution.days.splice(i,1); else state.institution.days.push(day);
+        const order = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        state.institution.days.sort((a,b)=> order.indexOf(a)-order.indexOf(b));
+        persist(); render();
+      };
+    });
+    document.getElementById('add-section').onclick = ()=>{
+      const val = document.getElementById('new-section').value.trim();
+      if(!val) return;
+      state.sections.push({id:uid(), name:val});
+      persist(); render();
+    };
+    document.querySelectorAll('[data-del-section]').forEach(b=>{
+      b.onclick = ()=>{
+        const id = b.dataset.delSection;
+        state.sections = state.sections.filter(s=>s.id!==id);
+        state.subjects = state.subjects.filter(s=>s.sectionId!==id);
+        persist(); render();
+      };
+    });
+    document.getElementById('add-subject').onclick = ()=>{
+      const name = document.getElementById('sub-name').value.trim();
+      if(!name) return;
+      state.subjects.push({
+        id: uid(), sectionId: document.getElementById('sub-section').value, name,
+        type: document.getElementById('sub-type').value,
+        periodsPerWeek: parseInt(document.getElementById('sub-periods').value)||2,
+        roomType: document.getElementById('sub-room').value,
+      });
+      persist(); render();
+    };
+    document.querySelectorAll('[data-del-subject]').forEach(b=>{ b.onclick = ()=>{ state.subjects = state.subjects.filter(s=>s.id!==b.dataset.delSubject); persist(); render(); }; });
+    document.getElementById('add-faculty').onclick = ()=>{
+      const name = document.getElementById('fac-name').value.trim();
+      if(!name) return;
+      const specRaw = document.getElementById('fac-spec').value.trim();
+      state.faculty.push({ id: uid(), name, specializations: specRaw ? specRaw.split(',').map(x=>x.trim()).filter(Boolean) : [], maxLoad: parseInt(document.getElementById('fac-max').value)||18 });
+      persist(); render();
+    };
+    document.querySelectorAll('[data-del-faculty]').forEach(b=>{ b.onclick = ()=>{ state.faculty = state.faculty.filter(f=>f.id!==b.dataset.delFaculty); persist(); render(); }; });
+    document.getElementById('add-room').onclick = ()=>{
+      const name = document.getElementById('room-name').value.trim();
+      if(!name) return;
+      state.rooms.push({ id: uid(), name, type: document.getElementById('room-type').value, capacity: parseInt(document.getElementById('room-cap').value)||60 });
+      persist(); render();
+    };
+    document.querySelectorAll('[data-del-room]').forEach(b=>{ b.onclick = ()=>{ state.rooms = state.rooms.filter(r=>r.id!==b.dataset.delRoom); persist(); render(); }; });
+  }
+
+  const runBtn = document.getElementById('run-generate');
+  if(runBtn){
+    runBtn.onclick = ()=>{
+      generating = true; render();
+      setTimeout(()=>{ generateTimetable(); generating = false; render(); }, 700);
+    };
+  }
+
+  const ttSection = document.getElementById('tt-section');
+  if(ttSection){
+    ttSection.onchange = e=>{ state._activeSection = e.target.value; render(); };
+    document.getElementById('tt-print').onclick = ()=> window.print();
+    const csvBtn = document.getElementById('tt-csv');
+    if(csvBtn) csvBtn.onclick = ()=> exportCSV(state._activeSection || state.sections[0].id);
+  }
+
+  document.querySelectorAll('[data-approve]').forEach(b=>{ b.onclick = ()=>{ approveSwap(b.dataset.approve); render(); }; });
+  document.querySelectorAll('[data-reject]').forEach(b=>{ b.onclick = ()=>{ rejectSwap(b.dataset.reject); render(); }; });
+
+  document.querySelectorAll('[data-day-filter]').forEach(c=>{ c.onclick = ()=>{ studentDayFilter = c.dataset.dayFilter; render(); }; });
+  const stPrint = document.getElementById('st-print');
+  if(stPrint) stPrint.onclick = ()=> window.print();
+
+  document.querySelectorAll('[data-mark-absent]').forEach(b=>{
+    b.onclick = ()=>{
+      if(confirm(`Mark yourself unavailable on ${b.dataset.markAbsent}? This will try to auto-reschedule your classes.`)){
+        markFacultyAbsent(state.session.facultyId, b.dataset.markAbsent);
+        render();
+      }
+    };
+  });
+  const swapSubmit = document.getElementById('swap-submit');
+  if(swapSubmit){
+    swapSubmit.onclick = ()=>{
+      const sessionId = document.getElementById('swap-session').value;
+      const day = document.getElementById('swap-day').value;
+      const period = parseInt(document.getElementById('swap-period').value);
+      requestSwap(state.session.facultyId, sessionId, day, period);
+      render();
+    };
+  }
+}
+
+/* ================= INIT ================= */
+load();
+render();
+</script>
+</body>
+</html>
